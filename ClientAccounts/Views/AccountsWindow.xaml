@@ -1,0 +1,65 @@
+﻿<Window x:Class="ClientAccounts.Views.AccountsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClientAccounts.Views" 
+        xmlns:viewmodels="clr-namespace:ClientAccounts.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:ClientAccountsVM}"
+        mc:Ignorable="d"
+        Title="Сведения о счетах клиента" Height="450" Width="1000">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Orientation="Vertical" Margin="5">
+            <TextBlock Text="Фамилия:"/>
+            <TextBlock Text="{Binding Path=Client.LastName}"/>
+            <TextBlock Text="Имя:"/>
+            <TextBlock Text="{Binding Path=Client.FirstName}"/>
+            <TextBlock Text="Отчество:"/>
+            <TextBlock Text="{Binding Path=Client.MiddleName}"/>
+            <TextBlock Text="Информация о счете:"/>
+            <TextBlock Text="{Binding Info}" 
+                       TextWrapping="Wrap"/>
+            <Button Content="Открыть новый вклад" Margin="5" 
+                    Command="{Binding OpenNewAccountCommand}"/>
+            <Button Content="Пополнить вклад" Margin="5" 
+                    Command="{Binding ReplenishCommand}" 
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}"/>
+            <Button Content="Снять сумму с вклада" Margin="5"
+                    Command="{Binding WithdrawCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}"/>
+            <Button Margin="5"
+                    Command="{Binding TransactToOwnAccountCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}">
+                <TextBlock TextAlignment="Center">
+                    Выполнить перевод <LineBreak/> между своими счетами
+                </TextBlock>
+            </Button>
+            <Button Margin="5"
+                    Command="{Binding TransactToAnotherClientsAccountCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}">
+                <TextBlock TextAlignment="Center">
+                    Выполнить перевод <LineBreak/> на счет другого клиента
+                </TextBlock>
+            </Button>
+            <Button Content="Закрыть вклад" Margin="5" 
+                    Command="{Binding CloseAccountCommand}"
+                    CommandParameter="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=DataGrid}}"/>
+        </StackPanel>
+        <DataGrid x:Name="AccountsDataGrid" 
+                  ItemsSource="{Binding DisplayedAccountsList}" 
+                  Grid.Column="1" 
+                  AutoGenerateColumns="False" 
+                  SelectedItem="{Binding SelectedAccount}"                  
+                  CanUserAddRows="False">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Номер счета" Binding="{Binding Path=AccountID}"/>
+                <DataGridTextColumn Header="Название вклада" Binding="{Binding Path=DisplayType}"/>
+                <DataGridTextColumn Header="Текущая сумма" Binding="{Binding Path=CurrentSum}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>

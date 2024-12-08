@@ -1,0 +1,37 @@
+﻿<Window x:Class="ClientAccounts.Views.OpeningAccountWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClientAccounts.ViewModels"      
+        d:DataContext="{d:DesignInstance Type=local:OpeningAccountVM}"
+        mc:Ignorable="d"        
+        Title="Выбор типа вклада" Height="350" Width="400">
+    <Grid>
+        <StackPanel>
+            <TextBlock Text="Наименование вклада:" Margin="5"/>
+            <RadioButton GroupName="AccountType" x:Name="SavingAccount" 
+                         Content="Накопительный счет с капитализацией" 
+                         IsThreeState="False" Margin="5"
+                         IsChecked="{Binding IsDeposit}" />
+            <RadioButton GroupName="AccountType" x:Name="Deposit"
+                         Content="Классический вклад без капитализации"
+                         IsThreeState="False" Margin="5"
+                         IsChecked="{Binding IsDeposit}"/>
+            <TextBlock Text="Срок вклада, месяцев:" Margin="5"/>
+            <ComboBox ItemsSource="{Binding AccountPeriodsList}" Margin="5"
+                      SelectedItem="{Binding Path=AccountPeriod, UpdateSourceTrigger=PropertyChanged}"/>
+            <WrapPanel Orientation="Horizontal">
+                <TextBlock Text="Процентная ставка, %:" Margin="5"/>
+                <TextBlock Text="{Binding Path=Rate}" Margin="5"/>
+            </WrapPanel>
+            <WrapPanel>
+                <TextBlock Text="Cумма вклада, руб.:" Margin="5"/>
+                <TextBox Text="{Binding Path=CurrentSum, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}" 
+                         Width="100" Margin="5"/>
+            </WrapPanel>
+            <Button Content="Открыть вклад" Margin="5" VerticalAlignment="Bottom"
+                   Click="Open_Button"/>
+        </StackPanel>
+    </Grid>
+</Window>

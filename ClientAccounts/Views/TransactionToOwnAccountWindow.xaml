@@ -1,0 +1,26 @@
+﻿<Window x:Class="ClientAccounts.Views.TransactionToOwnAccountWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ClientAccounts.Views"
+        xmlns:viewmodels="clr-namespace:ClientAccounts.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:TransactionVM}"        
+        mc:Ignorable="d"
+        Title="Выполнение перевода между своими счетами" Height="300" Width="400">
+    <Grid>
+        <StackPanel>
+            <TextBlock Text="Cчет списания" Margin="5"/>
+            <TextBlock Text="{Binding Path=AccountFrom}" Margin="5"/>
+            <TextBlock Text="Выберите счет зачисления" Margin="5"/>
+            <ComboBox x:Name="SelectedAccountTo_ComboBox" 
+                      Margin="5"
+                      ItemsSource="{Binding Path=OwnerAccountsTo, Mode=TwoWay}"                       
+                      SelectedItem="{Binding Path=AccountTo, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock Text="Введите сумму перевода, руб." Margin="5"/>
+            <TextBox Text="{Binding Path=TransactionSum, Mode=OneWayToSource}" Margin="5"/>
+            <Button Content="Выполнить перевод"  Margin="5"
+                    Click="Transact_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
