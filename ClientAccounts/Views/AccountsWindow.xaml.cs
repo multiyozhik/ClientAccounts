@@ -17,10 +17,8 @@ using ClientAccounts.ViewModels;
 
 namespace ClientAccounts.Views
 {
-	/// <summary>
-	/// Логика взаимодействия для AccountsWindow.xaml
-	/// </summary>
-	public partial class AccountsWindow : Window
+    //класс для AccountsWindow - окно с таблицей счетов и операциями со счетами
+    public partial class AccountsWindow : Window
 	{
 		public AccountsWindow()
 		{

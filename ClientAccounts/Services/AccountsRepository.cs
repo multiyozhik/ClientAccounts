@@ -5,7 +5,14 @@ using System.Linq;
 
 namespace ClientAccounts.Services
 {
-	class AccountsRepository : IAccountRepository
+    /// <summary>
+    /// Класс репозитория для хранения счетов.
+	/// Имеется private AccountsList (извне изм. можно только через методы).
+	/// Репозиторий счетов создается однократно с пом. static BuildAccountsRepository()-метода, 
+	/// кот. по списку Id клиентов инициализ. и возвр. static поле accountsRepository 
+	/// с сгенерир. списком счетов (2-4 счета включительно для каждого клиента)
+    /// </summary>
+    class AccountsRepository : IAccountRepository
 	{
 		List<Account>? AccountsList { get; set; } 
 
@@ -14,15 +21,15 @@ namespace ClientAccounts.Services
 
 		static AccountsRepository? accountsRepository;
 
-		public static AccountsRepository BuildAccountsRepository(List<Guid> ClientsIDList) // метод возвращает сам класс с сгенерированным списком счетов
+		public static AccountsRepository BuildAccountsRepository(List<Guid> ClientsIDList)
 		{
 			if (accountsRepository is null)
 			{
 				var accountsList = new List<Account>();
-				Random randomNumber = new Random();
+				var randomNumber = new Random();
 				foreach (Guid clientID in ClientsIDList)
 				{
-					for (int i = 0; i < randomNumber.Next(2, 4); i++) // 2-4 счета включительно у клиента					
+					for (int i = 0; i < randomNumber.Next(2, 4); i++) 					
 						accountsList.Add(new Account()
 						{
 							OwnerID = clientID,
@@ -37,14 +44,15 @@ namespace ClientAccounts.Services
 			}
 			return accountsRepository;
 		}
-		public void AddToRepository(Account account) => AccountsList?.Add(account);
+
+        public ICollection<Account> GetAccountsList() => AccountsList;
+        public void AddToRepository(Account account) => AccountsList?.Add(account);
 		public void RemoveFromRepository(Account account) => AccountsList?.Remove(account);
 		public void ChangeRepository(Account account, double summa)			
 		{
 			int index = AccountsList.FindIndex(x => x.AccountID == account.AccountID);
 			AccountsList[index].CurrentSum = account.CurrentSum + summa;
 		}
-		public ICollection<Account> GetAccountsList() => AccountsList;
 		public void Save(ICollection<Account> accountsList) => AccountsList = accountsList.ToList();
 	}
 }

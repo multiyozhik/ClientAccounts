@@ -1,18 +1,9 @@
-﻿using ClientAccounts.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using ClientAccounts.ViewModels;
+﻿using System.Windows;
 
 namespace ClientAccounts.Views
 {
-	/// <summary>
-	/// Логика взаимодействия для AccountReplenishingWindow.xaml
-	/// </summary>
-	public partial class AccountReplenishingWindow : Window
+    //Класс для диалогового окна WithdrawingWindow - пополнение счета
+    public partial class AccountReplenishingWindow : Window
 	{
 		public AccountReplenishingWindow()
 		{

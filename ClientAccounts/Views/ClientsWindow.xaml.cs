@@ -1,23 +1,23 @@
-﻿using System;
+﻿using ClientAccounts.ViewModels;
+using NLog;
+using System;
 using System.Windows;
 using System.Windows.Controls;
-using ClientAccounts.ViewModels;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Threading;
-using NLog;
 
 namespace ClientAccounts.Views
 {
-	/// <summary>
-	/// Логика взаимодействия для ClientsWindow.xaml
-	/// </summary>
-	public partial class ClientsWindow : Window
+    /// <summary>
+    /// Логика взаимодействия для ClientsWindow.xaml
+    /// </summary>
+    public partial class ClientsWindow : Window
 	{
 		public ClientsWindow()
 		{
 			InitializeComponent();
-			this.AddHandler(Validation.ErrorEvent, new RoutedEventHandler(OnErrorEvent));
+			AddHandler(Validation.ErrorEvent, new RoutedEventHandler(OnErrorEvent));
 		}
 		// метод возвращает неактивное состояние кнопки сохранения списка клиентов при ошибках, неполных данных
 		private void OnErrorEvent(object sender, RoutedEventArgs e)

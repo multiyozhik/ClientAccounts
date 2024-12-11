@@ -9,11 +9,20 @@ using ClientsRepositoryLib;
 
 namespace ClientAccounts.ViewModels
 {
-	class ClientsInfoVM : INotifyPropertyChanged
+    /// <summary>
+    /// Класс ClientsInfoVM - DataContext для ClientsWindow, кот. открывается из UserSelectionVM.
+	/// Реализуем INotifyPropertyChanged для того, чтобы все привязанные свойства автомат. обновлялись в окнах при их изменении.
+	/// В сеттерах свойств вызываем событие PropertyChanged, что свойство изменилось. 
+	/// 
+	/// В конструктор передаем репозиторий клиентов и счетов.
+	/// Кроме того, определены свойства выбранного клиента, Changer (Manager или Consultant), 
+	/// ObservableCollection<ClientVM> ClientsVMList
+    /// </summary>
+    class ClientsInfoVM : INotifyPropertyChanged
 	{
-		public string ChangingNotify { get; set; } // уведомление об изменении счета
+        public IUserType? Changer { get; internal set; }
 
-		ClientVM? selectedClientVM;
+        ClientVM? selectedClientVM;
 		public ClientVM SelectedClientVM
 		{
 			get => selectedClientVM;
@@ -23,21 +32,16 @@ namespace ClientAccounts.ViewModels
 				NotifyPropertyChanged(nameof(SelectedClientVM));
 			}
 		}
-		public bool IsReadOnly => Changer is not Manager;
-		public bool IsCanAddNewClient => Changer is Manager;
-
-		public IUserType? Changer { get; internal set; } // по сути selectedUser=Manager или Consultant
-
-		internal ClientAccountsVM ClientAccountsVM { get; }
 		IClientsRepository ClientsRepository { get; }
-		public ClientsInfoVM(IClientsRepository clientsRepository, ClientAccountsVM clientAccountsVM)
+        public ClientAccountsVM ClientAccountsVM { get; }
+        public ClientsInfoVM(IClientsRepository clientsRepository, ClientAccountsVM clientAccountsVM)
 		{
 			ClientsRepository = clientsRepository;
 			ClientAccountsVM = clientAccountsVM;
 			UpdateClientsList();
 		}
 
-		internal void UpdateClientsList()
+        public void UpdateClientsList()
 		{
 			ClientsVMList = new ObservableCollection<ClientVM>(
 				ClientsRepository.GetClientsList().Select(ConvertToClientVM));
@@ -58,20 +62,21 @@ namespace ClientAccounts.ViewModels
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		RelayCommand? showAccountsCommand;
-		public RelayCommand ShowAccountsCommand =>
+        //команда Показать счета (открыть окно со счетами и пробросить дальше значение Changer и выбранного Client)
+        RelayCommand? showAccountsCommand;
+		public RelayCommand ShowAccountsCommand => 
 			showAccountsCommand ??= new RelayCommand(ShowAccounts);
 		void ShowAccounts(object commandParameter)
 		{
-			// для передачи имени пользователя в ClientAccountsVM для ведения журнала
 			ClientAccountsVM.Changer = Changer;
-			ClientAccountsVM.Client = ConvertToClient(SelectedClientVM);
+			ClientAccountsVM.Client = ConvertToClient(SelectedClientVM); 
 			new AccountsWindow() { DataContext = ClientAccountsVM }.ShowDialog();
 		}
 
-		RelayCommand? saveCommand;
+        //команда Сохранить изменения списка клиентов и репозитория
+        RelayCommand? saveCommand;
 		public RelayCommand SaveCommand => saveCommand ??= new RelayCommand(Save);
-		void Save(object commandParameter) // сохраняет изменения или в случае некорректного ввода обрабатывает возникшее исключение
+		void Save(object commandParameter) 
 		{
 			try
 			{
@@ -85,6 +90,7 @@ namespace ClientAccounts.ViewModels
 
 		}
 
+		//команда закрытия окна клиентов
 		RelayCommand? closeCommand;
 		public RelayCommand CloseCommand => closeCommand ??= new RelayCommand(Close);
 		void Close(object commandParameter)
@@ -92,7 +98,8 @@ namespace ClientAccounts.ViewModels
 			if (commandParameter is Window clientsWindow) clientsWindow.Close();
 		}
 
-		ClientVM ConvertToClientVM(Client client) => new ClientVM()
+        //метод преобраз. объектов Client в ClientVM - нужен в конструкторе для UpdateClientsList() обновл. списка для окна 
+        ClientVM ConvertToClientVM(Client client) => new()
 			{
 				Changer = Changer,
 				Id = client.Id,
@@ -105,9 +112,10 @@ namespace ClientAccounts.ViewModels
 				ChangedData = client.ChangedData,
 				ChangingType = client.ChangingType,
 				LastChanger = client.LastChanger
-			};		
+			};
 
-		Client ConvertToClient(ClientVM clientVM) // при некорректном вводе данных клиента бросает исключение
+        //метод нужен в команде ShowAccountsCommand при преобразовании строки выбранного клиента из таблицы в Client
+        Client ConvertToClient(ClientVM clientVM) 
 		{
 			if (clientVM.LastName is null || clientVM.FirstName is null)
 				throw new ClientValidationException("Введите фамилию и имя клиента");
@@ -136,7 +144,7 @@ namespace ClientAccounts.ViewModels
 				clientVM.LastChanger);
 		}
 
-		bool ContainsOnlyLetters(string name)
+        static bool ContainsOnlyLetters(string name)
 		{
 			foreach (char symbol in name)
 			{
@@ -145,7 +153,7 @@ namespace ClientAccounts.ViewModels
 			return true;
 		}
 
-		bool ContainsOnlyDigits(string number)
+        static bool ContainsOnlyDigits(string number)
 		{
 			foreach (char symbol in number)
 			{

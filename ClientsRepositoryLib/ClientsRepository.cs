@@ -1,16 +1,20 @@
 ﻿namespace ClientsRepositoryLib
 {
+	/// <summary>
+	/// Класс репозитория с списком клиентов.
+	/// Список захардкоден и генерируется рандомно исходя из набора фамилий, имен, отчеств (10 клиентов).
+	/// </summary>
 	public class ClientsRepository : IClientsRepository
 	{
-		List<Client> ClientsList { get; set; } = GetClients(); // закрытое с-во инициализируем сгенерированной базой клиентов
-		static string[] lastNames = new string[] { "Иванов", "Сидоров", "Ли", "Хренов" };
-		static string[] firstNames = new string[] { "Нео", "Евгений", "Матвей", "Мустафа" };
-		static string[] middleNames = new string[] { "Сергеевич", "Данилович", "Борисович" };
+		List<Client> ClientsList { get; set; } = GetClients(); 
+		static readonly string[] lastNames = new string[] { "Иванов", "Сидоров", "Петров", "Васильев" };
+		static readonly string[] firstNames = new string[] { "Нео", "Евгений", "Матвей", "Мустафа" };
+		static readonly string[] middleNames = new string[] { "Сергеевич", "Данилович", "Борисович" };
 
 		static List<Client> GetClients()
 		{
 			var listClients = new List<Client>();
-			for (int i = 0; i < 10; i++)                // 10 клиентов
+			for (int i = 0; i < 10; i++)    
 				listClients.Add(
 					 new Client
 					 (Guid.NewGuid(),
@@ -25,7 +29,7 @@
 		public ICollection<Client> GetClientsList() => ClientsList;
 		public void Save(ICollection<Client> clients) => ClientsList = clients.ToList();
 
-		// получаем список Id клиентов для привязки к таблице счетов клиентов (доступ по Id)		
+		//получаем список Id клиентов для привязки к таблице счетов клиентов (доступ по Id)		
 		public List<Guid> GetClientsIDList() => ClientsList.Select(Client => Client.Id).ToList();
 	}
 }

@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using ClientAccounts.ViewModels;
+﻿using System.Windows;
 
 
 namespace ClientAccounts.Views
 {
-	/// <summary>
-	/// Логика взаимодействия для WithdrawingWindow.xaml
-	/// </summary>
-	public partial class WithdrawingWindow : Window
+    //Класс для диалогового окна WithdrawingWindow - частичное снятие средств со счета
+    public partial class WithdrawingWindow : Window
 	{
 		public WithdrawingWindow()
 		{

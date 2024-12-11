@@ -1,21 +1,23 @@
-﻿using ClientAccounts.Models;
-using ClientAccounts.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 namespace ClientAccounts.ViewModels
 {
-	class OpeningAccountVM : INotifyPropertyChanged
+    /// <summary>
+    /// Класс OpeningAccountVM - DataContext для окна OpeningAccountWindow открытия счета (открыв. по команде из AccountsWindow).
+	/// В конструктор OpeningAccountVM передается владелец счета OwnerID.
+	/// С окна собираются данные: в RadioButton тип счета IsDeposit, в ComboBox на сколько месяцев счет, 
+	/// в зав-ти от периода - захардкодена ставка %, в TextBox сумма счета.
+	/// Из собранных с формы данных будет сформирован объект Account, кот. будет доб. в репозиторий счетов.
+    /// </summary>
+    class OpeningAccountVM : INotifyPropertyChanged
 	{
 		public Guid OwnerID { get; set; } 		
 		public bool IsDeposit { get; set; }
 		Dictionary<int, double> RatesDictionary { get; } =
 			new Dictionary<int, double> { { 3, 6 }, { 6, 7 }, { 12, 8 }, { 18, 7 } };
-		public int[] AccountPeriodsList { get; } = new int[] { 3, 6, 12, 18 };
+		public int[] AccountPeriodsList { get; } = new int[] { 3, 6, 12, 18 }; 
 
 		int accountPeriod;
 		public int AccountPeriod

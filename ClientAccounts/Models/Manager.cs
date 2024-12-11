@@ -1,6 +1,9 @@
 ﻿namespace ClientAccounts.Models
 {
-	internal class Manager:IUserType
+	/// <summary>
+	/// Класс менеджера 
+	/// </summary>
+	internal class Manager : IUserType
 	{
 		public override string ToString() => "Менеджер";		
 	}

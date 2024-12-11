@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ClientsRepositoryLib
+﻿namespace ClientsRepositoryLib
 {
-	public class Client
+    /// <summary>
+    /// Класс клиента (Id, имя, телефон, паспортные данные), а также с-ва для отслеживания изменений этих данных:
+    /// дата изменений, измененные данные, тип изменений, кто изменил (менеджер, консультант) 
+    /// </summary>
+    public class Client
 	{
 		public Guid Id { get; set; }
 		public string LastName { get; set; }
