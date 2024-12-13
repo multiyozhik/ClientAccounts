@@ -1,15 +1,14 @@
 ﻿using ClientAccounts.Models;
 using ClientAccounts.Views;
-using ClientsRepositoryLib;
 
 namespace ClientAccounts.ViewModels
 {
-    // Класс UserSelectionVM - это DataContext для окна выбора пользователя UserSelectionWindow (менеджер, консультант). 
+	// Класс UserSelectionVM - это DataContext для окна выбора пользователя UserSelectionWindow (менеджер, консультант). 
 	// В конструктор передается объект ClientsInfoVM.
 	// При выделении SelectedUser в Combobox-элементе открывается ClientsWindow 
 	// (при этом обновляем лист клиентов и устанавливаем Changer, какой пользователь делает изменения).
 
-    class UserSelectionVM
+	class UserSelectionVM
 	{
 		public IUserType[] UserTypes { get; } = [new Consultant(), new Manager()];
 
