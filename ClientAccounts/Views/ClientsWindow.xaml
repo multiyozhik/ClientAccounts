@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:ClientAccounts.Views" 
         xmlns:viewmodels="clr-namespace:ClientAccounts.ViewModels"        
         mc:Ignorable="d"
+		d:DataContext="{d:DesignInstance Type=viewmodels:ClientsInfoVM}"
         DataContextChanged="Window_DataContextChanged"
         Title="Сведения о клиентах"
         MaxHeight="800" MaxWidth="1200"
@@ -22,11 +23,9 @@
                   ItemsSource="{Binding ClientsVMList, NotifyOnSourceUpdated=True,  UpdateSourceTrigger=PropertyChanged}"                  
                   SelectedItem="{Binding SelectedClientVM}"
                   CanUserAddRows="{Binding Path=IsCanAddNewClient}"
-                  ToolTip="{Binding Path=ChangingNotify}">            
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="Id_клиента" Binding="{Binding Id, Mode=OneWay}" 
-                                    IsReadOnly="True"/>
-                <DataGridTextColumn Header="Фамилия" Binding="{Binding LastName}"
+                  ToolTip="{Binding Path=ChangingNotify}">
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="Фамилия" Binding="{Binding LastName}"
                                     IsReadOnly="{Binding Source={StaticResource proxy}, Path = Data.IsReadOnly}"/>
                 <DataGridTextColumn Header="Имя" Binding="{Binding Path=FirstName}"
                                     IsReadOnly="{Binding Source={StaticResource proxy}, Path = Data.IsReadOnly}"/>
