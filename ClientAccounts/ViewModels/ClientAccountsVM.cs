@@ -12,49 +12,22 @@ using System.Windows.Input;
 
 namespace ClientAccounts.ViewModels
 {
+	//Класс ClientAccountsVM - DataContext окна AccountsWindow
+	//в конструктор передаем репозиторий счетов клиентов, а остал. с-ва
+	//DisplayedAccountsList, Client (выбран. клиент), Changer (тип польз-ля) инициализ. при откр. AccountsWindow
+
+	//Для логгирования операций со счетами - уст. nuget-пакет NLog и можем работать с объектом Logger 
+	//https://github.com/NLog/NLog/wiki/Tutorial для конфигурирования файл Nlog.config 
+
+	//Команды работают по принципу - откр. соотв. окно, сбор данных с формы, вызов UpdateDisplayedAccountsList(),
+	//MessageBox с сообщением об операции, AccountsRepository.ChangeRepository() и UpdateDisplayedAccountsList,
+	//вызов события изм. счета AccountEvent?.Invoke() и логгир. в файл Logger.Info(сообщение)
 	class ClientAccountsVM : INotifyPropertyChanged
 	{
-		// установив nuGet_пакет NLog можем работать с классом Logger (кот. предоставляет интерфейс логгирования)		
-		// Sample Nlog.config File https://stackoverflow.com/questions/42464439/nlog-where-is-nlog-config
-		Logger logger = LogManager.GetCurrentClassLogger();
+		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+		public string? Info => SelectedAccount?.GetAccountInfo(); //вывод инфо о счете через метод расширения
 
-		// с-ва DisplayedAccountsList, Client (выбранный клиент), Changer (имя пользователя)
-		// инициализируются в момент открытия окна AccountsWindow (show-методом)	
 		public IUserType? Changer;
-
-		IAccountRepository AccountsRepository { get; }
-		public ClientAccountsVM(IAccountRepository accountsRepository)
-		{
-			this.AccountsRepository = accountsRepository;
-		}
-		public Account? SelectedAccount
-		{
-			get => selectedAccount;
-			set
-			{
-				selectedAccount = value;
-				NotifyPropertyChanged(nameof(Info));
-			}
-		}
-
-		public string? Info => SelectedAccount?.GetAccountInfo(); // вывод информации о счете через метод расширения
-
-
-		public event EventHandler<AccountEventArgs> AccountEvent; // событие при изменении счета
-
-		List<Account>? displayedAccountsList;
-		public List<Account>? DisplayedAccountsList
-		{
-			get => displayedAccountsList;
-			set
-			{
-				if (displayedAccountsList != value)
-				{
-					displayedAccountsList = value;
-					NotifyPropertyChanged(nameof(DisplayedAccountsList));
-				}
-			}
-		}
 
 		Client? client;
 		public Client? Client
@@ -70,7 +43,6 @@ namespace ClientAccounts.ViewModels
 				}
 			}
 		}
-
 		void UpdateDisplayedAccountsList()
 		{
 			DisplayedAccountsList = AccountsRepository.GetAccountsList()
@@ -78,16 +50,57 @@ namespace ClientAccounts.ViewModels
 				.ToList();
 		}
 
-		public event PropertyChangedEventHandler? PropertyChanged;
+
+		List<Account>? displayedAccountsList;
+		public List<Account>? DisplayedAccountsList
+		{
+			get => displayedAccountsList;
+			set
+			{
+				if (displayedAccountsList != value)
+				{
+					displayedAccountsList = value;
+					NotifyPropertyChanged(nameof(DisplayedAccountsList));
+				}
+			}
+		}
+
+		public Account? SelectedAccount
+		{
+			get => selectedAccount;
+			set
+			{
+				selectedAccount = value;
+				NotifyPropertyChanged(nameof(Info));
+			}
+		}
+
+		//вспомог. метод, чтобы в сеттере свойств не прописывать вручную имена свойств при вызове PropertyChanged
 		void NotifyPropertyChanged(string propertyName = "")
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
+		public event PropertyChangedEventHandler? PropertyChanged;
+		public event EventHandler<AccountEventArgs> AccountEvent; //событие при изм. счета типизируем для возвр. аргум.
+
+
+
+		//в конструктор передаем репозиторий счетов клиентов
+		IAccountRepository AccountsRepository { get; }
+		public ClientAccountsVM(IAccountRepository accountsRepository)
+		{
+			AccountsRepository = accountsRepository;
+		}	
+
+
+		//Команда открыть новый счет
+
 		RelayCommand? openNewAccountCommand;
 		public ICommand OpenNewAccountCommand => openNewAccountCommand ??= new RelayCommand(OpenNewAccount);
 		void OpenNewAccount(object commandParameter)
 		{
+			if (client is null) return;
 			var openingAccountVM = new OpeningAccountVM(client.Id);
 			var openingAccountWindow = new OpeningAccountWindow() { DataContext = openingAccountVM };
 			var dialogResult = openingAccountWindow.ShowDialog();
@@ -103,29 +116,30 @@ namespace ClientAccounts.ViewModels
 			};
 			AccountsRepository.AddToRepository(newAccount);
 			MessageBox.Show(
-			 $"Открыт счет {newAccount.AccountID} клиента: " +
-			 $"{client.LastName} {client.FirstName} {client.MiddleName}. " +
-			 $"Сумма на счете {newAccount.CurrentSum} руб.",
-			 "Сообщение об открытии счета",
-			 MessageBoxButton.OK,
-			 MessageBoxImage.Information);
-			UpdateDisplayedAccountsList();
+				 $"Открыт счет {newAccount.AccountID} клиента: " +
+				 $"{client.LastName} {client.FirstName} {client.MiddleName}. " +
+				 $"Сумма на счете {newAccount.CurrentSum} руб.",
+				 "Сообщение об открытии счета",
+				 MessageBoxButton.OK,
+				 MessageBoxImage.Information);
+			UpdateDisplayedAccountsList(); //чтобы сработал сеттер DisplayedAccountsList, PropertyChanged и обнов. окно 
 
-			// вызов события при открытии счета
 			AccountEvent?.Invoke(
 				this, new AccountEventArgs(newAccount, $"Открыт счет {newAccount} " +
 					$"для клиента: {Client?.LastName} " +
-					$"{DateTime.Now.ToString()}"));
+					$"{DateTime.Now}"));
 
-			// через экземпляр класса Logger вызываем метод создания лога уровня Info
-			logger.Info($"Открыт счет. Пользователь {Changer}");
+			Logger.Info($"Открыт счет. Пользователь {Changer}");
 		}
 
-		RelayCommand? replenishCommand;          // пополнить счет
+
+		//Команда пополнить счет
+
+		RelayCommand? replenishCommand;     
 		public RelayCommand ReplenishCommand => replenishCommand ??= new RelayCommand(Replenish);
 		void Replenish(object commandParameter)
 		{
-			if (SelectedAccount != null)
+			if (SelectedAccount is not null)
 			{
 				var accountsReplenishingVM = new AccountsReplenishingVM();
 				var accountReplenishingWindow = new AccountReplenishingWindow() { DataContext = accountsReplenishingVM };
@@ -133,23 +147,27 @@ namespace ClientAccounts.ViewModels
 				if (dialogResult != true) return;
 				AccountsRepository.ChangeRepository(SelectedAccount, accountsReplenishingVM.AddingSum);
 				MessageBox.Show(
-				 $"Выполнено пополнение счета на {accountsReplenishingVM.AddingSum} руб. " +
-				 $"На вашем счете {SelectedAccount.CurrentSum} руб.",
-				 "Сообщение о пополнении счета",
-				 MessageBoxButton.OK,
-				 MessageBoxImage.Information);
+					 $"Выполнено пополнение счета на {accountsReplenishingVM.AddingSum} руб. " +
+					 $"На вашем счете {SelectedAccount.CurrentSum} руб.",
+					 "Сообщение о пополнении счета",
+					 MessageBoxButton.OK,
+					 MessageBoxImage.Information);
 				UpdateDisplayedAccountsList();
 
 				AccountEvent?.Invoke(
 				this, new AccountEventArgs(SelectedAccount, $"Пополнен счет {SelectedAccount} для клиента: {Client?.LastName}"));
-				logger.Info($"Пополнен счет. Пользователь {Changer}");
+				Logger.Info($"Пополнен счет. Пользователь {Changer}");
 			}
 		}
-		RelayCommand? withdrawCommand;           // снять со счета
+
+
+		//Команда снять чаасть средств со счета
+
+		RelayCommand? withdrawCommand;
 		public RelayCommand WithdrawCommand => withdrawCommand ??= new RelayCommand(Withdraw);
 		void Withdraw(object commandParameter)
 		{
-			if (SelectedAccount != null)
+			if (SelectedAccount is not null)
 			{
 				var accountsWithdrawingVM = new AccountsWithdrawingVM();
 				var withdrawingWindow = new WithdrawingWindow() { DataContext = accountsWithdrawingVM };
@@ -168,11 +186,14 @@ namespace ClientAccounts.ViewModels
 
 				AccountEvent?.Invoke(
 				this, new AccountEventArgs(SelectedAccount, $"Выполнен перевод со счета {SelectedAccount} для клиента: {Client?.LastName}"));
-				logger.Info($"Сняты средства со счета. Пользователь {Changer}");
+				Logger.Info($"Сняты средства со счета. Пользователь {Changer}");
 			}
 		}
 
-		RelayCommand? transactToOwnAccountCommand;           // между своими счетами
+
+		//Команда перевод между своими счетами
+
+		RelayCommand? transactToOwnAccountCommand;       
 		public ICommand TransactToOwnAccountCommand => transactToOwnAccountCommand ??= new RelayCommand(TransactToOwnAccount);
 		void TransactToOwnAccount(object commandParameter)
 		{
@@ -204,10 +225,13 @@ namespace ClientAccounts.ViewModels
 			AccountEvent?.Invoke(
 				this, new AccountEventArgs(SelectedAccount, $"Выполнен перевод  {transactionVM.TransactionSum} руб. со счета {transactionVM.AccountFrom} " +
 				$"на счет {transactionVM.AccountTo} для клиента: {Client?.LastName}"));
-			logger.Info($"Выполнен перевод на другой собственный счет. Пользователь {Changer}");
+			Logger.Info($"Выполнен перевод на другой собственный счет. Пользователь {Changer}");
 		}
 
-		RelayCommand? transactToAnotherClientsAccountCommand;    // перевод на счет другому клиенту
+
+		//Команда перевод на счет другому клиенту
+
+		RelayCommand? transactToAnotherClientsAccountCommand;
 		public ICommand TransactToAnotherClientsAccountCommand => transactToAnotherClientsAccountCommand ??= new RelayCommand(TransactToAnotherClientsAccount);
 		void TransactToAnotherClientsAccount(object commandParameter)
 		{
@@ -241,11 +265,13 @@ namespace ClientAccounts.ViewModels
 
 			AccountEvent?.Invoke(
 			this, new AccountEventArgs(SelectedAccount, $"Выполнен перевод  {transactionVM.TransactionSum} руб. " +
-			$"со счета {transactionVM.AccountFrom} клиента: {Client?.LastName}" +
-			$"на счет {transactionVM.AccountTo}"));
-			logger.Info($"Выполнен перевод на счет другого клиента. Пользователь {Changer}");
+				$"со счета {transactionVM.AccountFrom} клиента: {Client?.LastName}" +
+				$"на счет {transactionVM.AccountTo}"));
+			Logger.Info($"Выполнен перевод на счет другого клиента. Пользователь {Changer}");
 		}
 
+
+		//Команда закрыть счет
 
 		RelayCommand? closeAccountCommand;
 		private Account? selectedAccount;
@@ -269,7 +295,8 @@ namespace ClientAccounts.ViewModels
 					 MessageBoxImage.Information);
 				AccountsRepository.RemoveFromRepository(SelectedAccount);
 				UpdateDisplayedAccountsList();
-				logger.Info($"Счет закрыт. Пользователь {Changer}");
+
+				Logger.Info($"Счет закрыт. Пользователь {Changer}");
 			}
 		}
 	}

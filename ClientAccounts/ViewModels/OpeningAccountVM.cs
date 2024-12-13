@@ -4,13 +4,12 @@ using System.ComponentModel;
 using System.Windows;
 namespace ClientAccounts.ViewModels
 {
-    /// <summary>
-    /// Класс OpeningAccountVM - DataContext для окна OpeningAccountWindow открытия счета (открыв. по команде из AccountsWindow).
-	/// В конструктор OpeningAccountVM передается владелец счета OwnerID.
-	/// С окна собираются данные: в RadioButton тип счета IsDeposit, в ComboBox на сколько месяцев счет, 
-	/// в зав-ти от периода - захардкодена ставка %, в TextBox сумма счета.
-	/// Из собранных с формы данных будет сформирован объект Account, кот. будет доб. в репозиторий счетов.
-    /// </summary>
+    // Класс OpeningAccountVM - DataContext для окна OpeningAccountWindow открытия счета (открыв. по команде из AccountsWindow).
+	// В конструктор OpeningAccountVM передается владелец счета OwnerID.
+	// С окна собираются данные: в RadioButton тип счета IsDeposit, в ComboBox на сколько месяцев счет, 
+	// в зав-ти от периода - захардкодена ставка %, в TextBox сумма счета.
+	// Из собранных с формы данных будет сформирован объект Account, кот. будет доб. в репозиторий счетов.
+
     class OpeningAccountVM : INotifyPropertyChanged
 	{
 		public Guid OwnerID { get; set; } 		

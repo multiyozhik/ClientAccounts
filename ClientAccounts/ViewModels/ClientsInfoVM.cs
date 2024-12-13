@@ -9,16 +9,14 @@ using ClientsRepositoryLib;
 
 namespace ClientAccounts.ViewModels
 {
-    /// <summary>
-    /// Класс ClientsInfoVM - DataContext для ClientsWindow, кот. открывается из UserSelectionVM.
-	/// Реализуем INotifyPropertyChanged для того, чтобы все привязанные свойства автомат. обновлялись в окнах при их изменении.
-	/// В сеттерах свойств вызываем событие PropertyChanged, что свойство изменилось. 
-	/// 
-	/// В конструктор передаем репозиторий клиентов и счетов.
-	/// Кроме того, определены свойства выбранного клиента, Changer (Manager или Consultant), 
-	/// ObservableCollection<ClientVM> ClientsVMList
-    /// </summary>
-    class ClientsInfoVM : INotifyPropertyChanged
+	// Класс ClientsInfoVM - DataContext для ClientsWindow, кот. открывается из UserSelectionVM.
+	// Реализуем INotifyPropertyChanged для того, чтобы все привязанные свойства автомат. обновл. в окнах при их изм.
+	// В сеттерах свойств вызыв. событие PropertyChanged, что с-во изменилось. 
+
+	// В конструктор передаем репозиторий клиентов и счетов.
+	// Основные свойства - SelectedClientVM, Changer (Manager или Consultant), Observable ClientsVMList
+
+	class ClientsInfoVM : INotifyPropertyChanged
 	{
         public IUserType? Changer { get; internal set; }
 
@@ -32,22 +30,27 @@ namespace ClientAccounts.ViewModels
 				NotifyPropertyChanged(nameof(SelectedClientVM));
 			}
 		}
+
+
+		//в констуктор передаем репозитории клиентов и их счетов
 		IClientsRepository ClientsRepository { get; }
-        public ClientAccountsVM ClientAccountsVM { get; }
+		public ClientAccountsVM ClientAccountsVM { get; }
         public ClientsInfoVM(IClientsRepository clientsRepository, ClientAccountsVM clientAccountsVM)
 		{
 			ClientsRepository = clientsRepository;
 			ClientAccountsVM = clientAccountsVM;
-			UpdateClientsList();
+			LoadClientsList();
 		}
-
-        public void UpdateClientsList()
+        public void LoadClientsList()
 		{
 			ClientsVMList = new ObservableCollection<ClientVM>(
 				ClientsRepository.GetClientsList().Select(ConvertToClientVM));
-			ClientsVMList.CollectionChanged += ClientsList_CollectionChanged;
+			ClientsVMList.CollectionChanged += ClientsList_CollectionChanged; 
 		}
 
+
+		// ObservableCollection<ClientVM> ClientsVMList с подпиской обработчика для CollectionChanged-события,
+		// при доб. новых клиентов нужно уст. для них значение Changer 
 		public ObservableCollection<ClientVM> ClientsVMList { get; set; }
 		void ClientsList_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
@@ -57,10 +60,11 @@ namespace ClientAccounts.ViewModels
 		}
 
 		public event PropertyChangedEventHandler? PropertyChanged;
-		void NotifyPropertyChanged(string propertyName = "")
+		void NotifyPropertyChanged(string propertyName = "") 
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
+
 
         //команда Показать счета (открыть окно со счетами и пробросить дальше значение Changer и выбранного Client)
         RelayCommand? showAccountsCommand;
@@ -72,6 +76,7 @@ namespace ClientAccounts.ViewModels
 			ClientAccountsVM.Client = ConvertToClient(SelectedClientVM); 
 			new AccountsWindow() { DataContext = ClientAccountsVM }.ShowDialog();
 		}
+
 
         //команда Сохранить изменения списка клиентов и репозитория
         RelayCommand? saveCommand;
@@ -90,6 +95,7 @@ namespace ClientAccounts.ViewModels
 
 		}
 
+
 		//команда закрытия окна клиентов
 		RelayCommand? closeCommand;
 		public RelayCommand CloseCommand => closeCommand ??= new RelayCommand(Close);
@@ -97,6 +103,7 @@ namespace ClientAccounts.ViewModels
 		{
 			if (commandParameter is Window clientsWindow) clientsWindow.Close();
 		}
+
 
         //метод преобраз. объектов Client в ClientVM - нужен в конструкторе для UpdateClientsList() обновл. списка для окна 
         ClientVM ConvertToClientVM(Client client) => new()
@@ -152,7 +159,6 @@ namespace ClientAccounts.ViewModels
 			}
 			return true;
 		}
-
         static bool ContainsOnlyDigits(string number)
 		{
 			foreach (char symbol in number)

@@ -3,6 +3,8 @@ using System;
 
 namespace ClientAccounts.ViewModels
 {
+	//Класс аргументов события изменения счета AccountEvent
+	//в ClientAccountsVM.cs определялось типизир. событие public event EventHandler<AccountEventArgs> AccountEvent;
 	internal class AccountEventArgs:EventArgs
 	{
 		public Account Account { get; }

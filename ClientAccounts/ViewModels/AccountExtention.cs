@@ -2,10 +2,8 @@
 
 namespace ClientAccounts.ViewModels
 {
-    /// <summary>
-    /// Класс для создания метода расширения для Account-класса
-    /// т.е. можно использовать так: Account.GetAccountInfo() с получ. string информации о счете
-    /// </summary>
+    // Класс для создания метода расширения для Account-класса
+    // т.е. можно использовать так: Account.GetAccountInfo() с получ. string информации о счете
     static class AccountExtention
 	{
 		public static string GetAccountInfo(this Account account) =>

@@ -5,19 +5,19 @@ using System.Linq;
 
 namespace ClientAccounts.Services
 {
-    /// <summary>
-    /// Класс репозитория для хранения счетов.
-	/// Имеется private AccountsList (извне изм. можно только через методы).
-	/// Репозиторий счетов создается однократно с пом. static BuildAccountsRepository()-метода, 
-	/// кот. по списку Id клиентов инициализ. и возвр. static поле accountsRepository 
-	/// с сгенерир. списком счетов (2-4 счета включительно для каждого клиента)
-    /// </summary>
+    // Класс репозитория для хранения счетов.
+
+	// Имеется private AccountsList (извне изм. можно только через методы).
+	// Репозиторий счетов создается однократно с пом. static BuildAccountsRepository()-метода, 
+	// кот. по списку Id клиентов инициализ. и возвр. static поле accountsRepository 
+	// с сгенерир. списком счетов (2-4 счета включительно для каждого клиента)
+
     class AccountsRepository : IAccountRepository
 	{
 		List<Account>? AccountsList { get; set; } 
 
-		static readonly int[] accountsPeriods = new int[] { 3, 6, 12, 24 };
-		static readonly double[] ratesList = new double[] { 3, 4, 5, 6 };		
+		static readonly int[] accountsPeriods = [3, 6, 12, 24];
+		static readonly double[] ratesList = [3, 4, 5, 6];		
 
 		static AccountsRepository? accountsRepository;
 
@@ -50,6 +50,7 @@ namespace ClientAccounts.Services
 		public void RemoveFromRepository(Account account) => AccountsList?.Remove(account);
 		public void ChangeRepository(Account account, double summa)			
 		{
+			if (AccountsList is null || AccountsList.Count == 0) return;
 			int index = AccountsList.FindIndex(x => x.AccountID == account.AccountID);
 			AccountsList[index].CurrentSum = account.CurrentSum + summa;
 		}

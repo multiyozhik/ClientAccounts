@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace ClientAccounts.Services
 {
-	/// <summary>
-	/// Интерфейс репозитория для хранения счетов
-	/// (методы получения списка счетов, доб. счета в репоз., изменения (суммы на счете), удаления счета, сохранения репоз.)
-	/// </summary>
+	// Интерфейс репозитория для хранения счетов
+	// (методы получения списка счетов, доб. счета в репоз., изменения (суммы на счете), удаления счета, сохранения репоз.)
 	internal interface IAccountRepository
 	{
         ICollection<Account> GetAccountsList();

@@ -56,9 +56,8 @@
                   SelectedItem="{Binding SelectedAccount}"                  
                   CanUserAddRows="False">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Номер счета" Binding="{Binding Path=AccountID}"/>
-                <DataGridTextColumn Header="Название вклада" Binding="{Binding Path=DisplayType}"/>
-                <DataGridTextColumn Header="Текущая сумма" Binding="{Binding Path=CurrentSum}"/>
+				<DataGridTextColumn Header="Номер счета" Binding="{Binding Path=AccountID}"/>
+				<DataGridTextColumn Header="Текущая сумма" Binding="{Binding Path=CurrentSum}"/>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>

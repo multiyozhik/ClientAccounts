@@ -1,9 +1,8 @@
 ﻿
 namespace ClientAccounts.Models
 {
-	/// <summary>
-	/// Класс консультанта
-	/// </summary>
+	// Класс консультанта
+
 	internal class Consultant:IUserType
 	{
 		public override string ToString() => "Консультант";

@@ -3,10 +3,8 @@ using System.Windows.Input;
 
 namespace ClientAccounts.ViewModels
 {
-    /// <summary>
-    /// Класс команд реализует ICommand (методы bool CanExecute, void Execute и событие EventHandler CanExecuteChanged)
-    /// readonly - для того, чтоб установить однократно в констр-ре, запрет на случайн. изм. логики команды
-    /// </summary>
+    // Класс команд реализует ICommand (методы bool CanExecute, void Execute и событие EventHandler CanExecuteChanged)
+    // readonly - для того, чтоб установить однократно в констр-ре, запрет на случайн. изм. логики команды
     internal class RelayCommand : ICommand 
 	{
         readonly Action<object> _execute;  
