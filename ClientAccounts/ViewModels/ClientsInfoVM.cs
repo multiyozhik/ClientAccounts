@@ -19,8 +19,10 @@ namespace ClientAccounts.ViewModels
 	class ClientsInfoVM : INotifyPropertyChanged
 	{
         public IUserType? Changer { get; internal set; }
+		public bool IsReadOnly { get; set; }
+		public bool IsCanAddNewClient { get; set; }
 
-        ClientVM? selectedClientVM;
+		ClientVM? selectedClientVM;
 		public ClientVM SelectedClientVM
 		{
 			get => selectedClientVM;
@@ -124,6 +126,8 @@ namespace ClientAccounts.ViewModels
         //метод нужен в команде ShowAccountsCommand при преобразовании строки выбранного клиента из таблицы в Client
         Client ConvertToClient(ClientVM clientVM) 
 		{
+			if (clientVM.Id == System.Guid.Empty) //иначе при доб. менеджером нов.клиента Id = 0000-0000...
+				clientVM.Id = System.Guid.NewGuid();
 			if (clientVM.LastName is null || clientVM.FirstName is null)
 				throw new ClientValidationException("Введите фамилию и имя клиента");
 			if (clientVM.LastName.Length < 2)

@@ -9,10 +9,9 @@ using System.Windows.Threading;
 
 namespace ClientAccounts.Views
 {
-    /// <summary>
-    /// Логика взаимодействия для ClientsWindow.xaml
-    /// </summary>
-    public partial class ClientsWindow : Window
+	// Класс для окна ClientsWindow.xaml
+	/// </summary>
+	public partial class ClientsWindow : Window
 	{
 		public ClientsWindow()
 		{
@@ -40,23 +39,23 @@ namespace ClientAccounts.Views
 		private void Window_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			var clientsInfoVM = (ClientsInfoVM)DataContext;
-			// связывается событие изменения счета с обработчиком
 			clientsInfoVM.ClientAccountsVM.AccountEvent += ClientAccountsVM_AccountEvent;			
-			// передаем наличие изменений клинтов в сообщение для журнала логирования
 			Logger logger = LogManager.GetCurrentClassLogger();
 			logger.Log(LogLevel.Info, $"Изменение данных клиента. Пользователь {clientsInfoVM.Changer}");
 		}
 
-		// обработчик при вызове события изменения счета - вызвать всплывающее окно Popup
+		// обработчик при изменении счета - вызвать всплывающее окно Popup
 		private void ClientAccountsVM_AccountEvent(object? sender, AccountEventArgs e)
 		{
-			Popup popup = new Popup();
-			popup.Width = 300;
-			popup.Height = 200;
-			popup.PlacementTarget = ClientsData; // расположение относительно целевого элемента
-			popup.Placement = PlacementMode.Bottom;
+			Popup popup = new()
+			{
+				Width = 300,
+				Height = 200,
+				PlacementTarget = ClientsData, // расположение относительно целевого элемента
+				Placement = PlacementMode.Bottom
+			};
 
-			TextBlock popupText = new TextBlock();
+			TextBlock popupText = new();
 			popupText.Text = e.Message;
 			popupText.Background = Brushes.LightGray;
 			popupText.Foreground = Brushes.Blue;

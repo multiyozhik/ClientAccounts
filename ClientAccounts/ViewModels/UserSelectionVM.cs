@@ -1,5 +1,6 @@
 ﻿using ClientAccounts.Models;
 using ClientAccounts.Views;
+using ClientsRepositoryLib;
 
 namespace ClientAccounts.ViewModels
 {
@@ -10,16 +11,25 @@ namespace ClientAccounts.ViewModels
 
     class UserSelectionVM
 	{
-		public IUserType[] UserTypes { get; } = new IUserType[] { new Consultant(), new Manager() };
+		public IUserType[] UserTypes { get; } = [new Consultant(), new Manager()];
 
 		ClientsInfoVM ClientsInfoVM { get; }
-        public IUserType SelectedUser
+
+		IUserType selectedUser;
+		public IUserType SelectedUser
         {
-            set
-            {
-                ClientsInfoVM.Changer = value;
+			get => selectedUser;
+			set
+			{
+				selectedUser = value;
+
+				ClientsInfoVM.Changer = selectedUser;
                 ClientsInfoVM.LoadClientsList();
-                new ClientsWindow() { DataContext = ClientsInfoVM }.ShowDialog();
+
+				ClientsInfoVM.IsReadOnly = value is not Manager;
+				ClientsInfoVM.IsCanAddNewClient = value is Manager;
+
+				new ClientsWindow() { DataContext = ClientsInfoVM }.ShowDialog();
             }
         }
 

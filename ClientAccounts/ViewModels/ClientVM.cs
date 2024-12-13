@@ -8,8 +8,12 @@ namespace ClientAccounts.ViewModels
 	// логикой при изменении свойств клиента
 	public class ClientVM : IDataErrorInfo, INotifyPropertyChanged
 	{
+
 		public IUserType Changer { get; set; }
-		public Guid Id { get; set; } = new Guid();
+
+		//public Guid Id { get; set; } = new Guid();
+		public Guid Id { get; set; }
+
 		string? _lastName;
 		public string? LastName
 		{
